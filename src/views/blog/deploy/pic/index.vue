@@ -29,8 +29,8 @@
         </template>
       </el-table-column>
       <el-table-column width="150px" align="center" label="图片描述" prop="content"></el-table-column>
-      <el-table-column width="150px" align="center" label="跳转地址" prop="url"></el-table-column>
-      <el-table-column label="图片" align="center" prop="image_url" width="80">
+      <el-table-column min-width="3" align="center" label="跳转地址" prop="url"></el-table-column>
+      <el-table-column label="图片" align="center" prop="image_url" min-width="3">
           <template slot-scope="{row}">
             <el-image class="list_image" :src="row.image_url" :preview-src-list="[row.image_url]">
               <div class="image-error">暂无图片</div>
@@ -61,7 +61,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="150px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" min-width="5" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-waves type="primary" size="mini" @click="picEdit(row.id)">
             编辑
