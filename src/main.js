@@ -1,3 +1,11 @@
+/*
+ * @Author: yumiazusa yumiazusa@hotmail.com
+ * @Date: 2023-02-13 16:00:23
+ * @LastEditors: yumiazusa yumiazusa@hotmail.com
+ * @LastEditTime: 2023-02-27 10:54:05
+ * @FilePath: /www/miledo/admin/src/main.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import Vue from 'vue'
 
 import Cookies from 'js-cookie'
@@ -20,6 +28,9 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+
+// import "e-icon-picker/lib/symbol.js"; //基本彩色图标库
+// import 'e-icon-picker/lib/index.css'; // 基本样式，包含基本图标
 import 'font-awesome/css/font-awesome.min.css'; //font-awesome 图标库
 import 'element-ui/lib/theme-chalk/icon.css'; //element-ui 图标库
 
@@ -55,6 +66,8 @@ Vue.component("pagination",Pagination)
 import SDatePicker from '@/components/common/SDatePicker/SDatePicker'
 Vue.component("s-date-picker",SDatePicker)
 Vue.config.productionTip = false
+import iconPicker from 'vue-fontawesome-elementui-icon-picker';
+Vue.use(iconPicker);
 import Base from './assets/js/base.js'
 Vue.prototype.$base = Base
 new Vue({
