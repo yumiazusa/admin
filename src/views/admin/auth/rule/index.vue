@@ -191,10 +191,6 @@
 
 <script>
 import { ruleIndex,ruleStatus,ruleOpen,ruleAffix,ruleUpdate,ruleStore,ruleEdit,ruleDestroy,ruleSorts,rulePidArr } from '@/api/admin/rule.js'
-<<<<<<< HEAD
-=======
-// import {EIconPicker} from 'e-icon-picker' 
->>>>>>> 0d40655dc573d1fa087d7103ce8a71dbe892cfbe
 import {iconPicker} from 'vue-fontawesome-elementui-icon-picker' 
 export default {
   name: 'RuleIndex',
