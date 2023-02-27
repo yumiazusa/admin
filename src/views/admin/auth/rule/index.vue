@@ -5,7 +5,7 @@
           添加模块
         </el-button>
     </div>
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" row-key="name">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" row-key="id">
       <el-table-column width="200px" label="权限组名称">
         <template slot-scope="{row}">
           <span>
@@ -127,7 +127,7 @@
         </el-form-item>
         
         <el-form-item label="图标">
-          <e-icon-picker v-model="form.icon" :options="options"/>
+          <icon-picker v-model="form.icon"></icon-picker>
         </el-form-item>
         <el-form-item label="权限名称" prop="name">
           <el-input placeholder="请输入权限名称" maxlength="100" clearable show-word-limit v-model="form.name"
@@ -191,10 +191,10 @@
 
 <script>
 import { ruleIndex,ruleStatus,ruleOpen,ruleAffix,ruleUpdate,ruleStore,ruleEdit,ruleDestroy,ruleSorts,rulePidArr } from '@/api/admin/rule.js'
-import {EIconPicker} from 'e-icon-picker' 
+import {iconPicker} from 'vue-fontawesome-elementui-icon-picker' 
 export default {
   name: 'RuleIndex',
-  components: { EIconPicker},
+  components: { iconPicker},
   data() {
     var checkSort = (rule, value, callback) => {
       // 定义正则表达式

@@ -1,6 +1,7 @@
 <template>
   <div class="login-container">
-    <img src="@/assets/images/bg.jpg" class="login-b" alt="" />
+    <img src="@/assets/images/bg.png" class="login-b" alt="" />
+    <!-- 粒子效果 -->
     <vue-particles
       color="#dedede"
       :particleOpacity="0.9"
@@ -64,7 +65,7 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
+      <el-button :loading="loading" type="info" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         登录
       </el-button>
     </el-form>

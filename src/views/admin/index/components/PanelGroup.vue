@@ -54,7 +54,8 @@ export default {
     overflow: hidden;
     color: #666;
     background: #fff;
-    box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
+    border-radius: 0.5em;
+    box-shadow: 0.1em 0.1em 0.5em #124;
     border-color: rgba(0, 0, 0, .05);
     &:hover {
       .card-panel-icon-wrapper {
@@ -70,7 +71,7 @@ export default {
         background: #f4516c;
       }
       .icon-shopping {
-        background: #34bfa3
+        background: #0a6fa5
       }
     }
     .icon-people {

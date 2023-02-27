@@ -32,17 +32,17 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="150px" align="center" label="权限组">
+      <el-table-column min-width="5" align="center" label="权限组">
         <template slot-scope="{row}">
           <span>{{ row.auth_groups.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="150px" align="center" label="所属项目">
+      <el-table-column min-width="5" align="center" label="所属项目">
         <template slot-scope="{row}">
           <span>{{ row.auth_projects.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="120px" align="center" label="姓名">
+      <el-table-column min-width="3" align="center" label="姓名">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
