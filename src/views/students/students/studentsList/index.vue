@@ -281,11 +281,6 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        nickname:'',
-        sex:null,
-        province_id:null,
-        city_id:null,
-        county_id:null,
         status:null,
         created_at:[],
         updated_at:[]
@@ -296,12 +291,8 @@ export default {
       addForm: {
         name: "",
         phone:"",
-        email: "",
         password: "",
         password_confirmation: "",
-        province_id: null,
-        city_id: null,
-        county_id: null,
         status: 1,
         sex: 1,
         birth: ""
@@ -322,29 +313,13 @@ export default {
         birth: [
           { required: true, message: "请选择出生年月日！", trigger: "change" }
         ],  
-        province_id: [
-          { required: true, message: "请选择地址！", trigger: "change" }
-        ],
-        city_id: [
-          { required: true, message: "请选择地址！", trigger: "change" }
-        ],
-        county_id: [
-          { required: true, message: "请选择地址！", trigger: "change" }
-        ],
         name: [
           { required: true, message: "请输入姓名！", trigger: "blur" },
           { min: 2, max: 20, message: "姓名长度在2到20个字符", trigger: "blur" }
         ],
-        nickname: [
-          { required: true, message: "请输入昵称！", trigger: "blur" }
-        ],
         phone: [
           { required: true, message: "请输入手机号！", trigger: "blur" },
           { validator: checkPhone, trigger: "blur" }
-        ],
-        email: [
-          { required: true, message: "请输入邮箱！", trigger: "blur" },
-          { validator: checkEmail, trigger: "blur" }
         ],
         password: [
           { required: true, message: "请输入密码！", trigger: "blur" },
@@ -359,32 +334,16 @@ export default {
         birth: [
           { required: true, message: "请选择出生年月日！", trigger: "change" }
         ],  
-        province_id: [
-          { required: true, message: "请选择地址！", trigger: "change" }
-        ],
-        city_id: [
-          { required: true, message: "请选择地址！", trigger: "change" }
-        ],
-        county_id: [
-          { required: true, message: "请选择地址！", trigger: "change" }
-        ],
+      
         name: [
           { required: true, message: "请输入姓名！", trigger: "blur" },
           { min: 2, max: 20, message: "姓名长度在2到20个字符", trigger: "blur" }
-        ],
-        nickname: [
-          { required: true, message: "请输入昵称！", trigger: "blur" }
         ],
         phone: [
           { required: true, message: "请输入手机号！", trigger: "blur" },
           { validator: checkPhone, trigger: "blur" }
         ],
-        email: [
-          { required: true, message: "请输入邮箱！", trigger: "blur" },
-          { validator: checkEmail, trigger: "blur" }
-        ]
       },
-      areaData:[],
       searchValue:[],
       addValue:[],
       editValue:[],
@@ -466,11 +425,7 @@ export default {
         this.listQuery = {
             page: 1,
             limit: 10,
-            nickname:"",
-            sex:null,
-            province_id:null,
-            city_id:null,
-            county_id:null,
+            sex:null,   
             status:null,
             created_at:[],
             updated_at:[]
@@ -482,13 +437,8 @@ export default {
       this.addForm = {
             name: "",
             phone:"",
-            email: "",
-            nickname:"",
             password: "",
             password_confirmation: "",
-            province_id: null,
-            city_id: null,
-            county_id: null,
             status: 1,
             sex: 1,
             birth: ""
