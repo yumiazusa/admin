@@ -1,18 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.nickname" placeholder="请输入昵称" style="width: 200px;" class="filter-item" clearable @change="handleFilter"/>
-      <el-cascader :options="areaData"
-            placeholder="请选择地址"
-           :props="{
-              expandTrigger: 'hover',
-              value: 'id',
-              label: 'name',
-              checkStrictly: true
-            }" 
-            v-model="searchValue"
-            @change="searchHandleChange"
-            clearable style="width: 300px;"></el-cascader>
       <el-select v-model="listQuery.status" placeholder="请选择状态" clearable style="width: 200px" class="filter-item" @change="handleFilter">
         <el-option v-for="(item,index) in statusList" :label="item" :key="index" value="index"></el-option>
       </el-select>
@@ -48,9 +36,9 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="120px" align="center" label="学号">
+      <el-table-column width="80px" align="center" label="性别">
         <template slot-scope="{row}">
-          <span>{{ row.stdid }}</span>
+          <span>{{ sexList[row.sex] }}</span>
         </template>
       </el-table-column>
       <el-table-column width="130px" align="center" label="手机号">
@@ -58,12 +46,17 @@
           <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="2" align="center" label="年级">
+      <el-table-column min-width="2" align="center" label="邮箱">
+        <template slot-scope="{row}">
+          <span>{{ row.email }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column min-width="1" align="center" label="年级">
         <template slot-scope="{row}">
           <span>{{ row.grade_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="2" align="center" label="班级">
+      <el-table-column min-width="1" align="center" label="班级">
         <template slot-scope="{row}">
           <span>{{ row.class_id }}</span>
         </template>
@@ -107,26 +100,13 @@
     <el-dialog   title="添加" :visible.sync="addDialogVisible" width="80%" @close="addDialogClose">
       <!-- 主体区 -->
       <el-form label-width="100px" :model="addForm" :rules="addRules" ref="addRef">
+        <el-form-item label="学号" prop="stdid">
+          <el-input placeholder="请输入学号" maxlength="20" clearable show-word-limit v-model="addForm.stdid"
+          ></el-input>
+        </el-form-item>
         <el-form-item label="名称" prop="name">
           <el-input placeholder="请输入姓名" maxlength="20" clearable show-word-limit v-model="addForm.name"
           ></el-input>
-        </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input placeholder="请输入昵称" maxlength="20" clearable show-word-limit v-model="addForm.nickname"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="地址" prop="county_id">
-          <el-cascader :options="areaData"
-            placeholder="请选择地址"
-           :props="{
-              expandTrigger: 'hover',
-              value: 'id',
-              label: 'name',
-              checkStrictly: true
-            }" 
-            v-model="addValue"
-            @change="addHandleChange"
-            clearable style="width: 100%;"></el-cascader>
         </el-form-item>
         <el-form-item label="出生年月日" prop="birth">
             <el-date-picker
@@ -140,7 +120,16 @@
           <el-input placeholder="请输入手机号" maxlength="11" clearable show-word-limit v-model="addForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="addForm.email"></el-input>
+          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="年级" prop="grade_id">
+          <el-input placeholder="请选择年级" maxlength="11" clearable show-word-limit v-model="addForm.grade_id"></el-input>
+        </el-form-item>
+        <el-form-item label="班级" prop="class_id">
+          <el-input placeholder="请选择班级" maxlength="11" clearable show-word-limit v-model="addForm.class_id"></el-input>
+        </el-form-item>
+        <el-form-item label="项目分类" prop="project_id">
+          <el-input placeholder="请选择项目分类" maxlength="11" clearable show-word-limit v-model="addForm.class_id"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input type="password" placeholder="请输入密码" maxlength="14" clearable show-word-limit v-model="addForm.password"
@@ -209,7 +198,7 @@
           <el-input placeholder="请输入手机号" maxlength="11" clearable show-word-limit v-model="editForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="editForm.email"></el-input>
+          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="addForm.email"></el-input>
         </el-form-item>
         <el-row :gutter="20">
           <el-col :span="10">
@@ -237,7 +226,7 @@
 </template>
 
 <script>
-import { studentsIndex,userStatus,userStore,userEdit,userUpdate,userUpdatePwd } from '@/api/students/students'
+import { studentsIndex,studentsStatus,studentsStore,studentsEdit,studentsUpdate,studentsUpdatePwd } from '@/api/students/students'
 import { getAreaData } from '@/api/admin/config'
 export default {
   name: 'StudentsIndex',
@@ -500,7 +489,7 @@ export default {
     add() {
       this.$refs.addRef.validate(valid => {
         if (valid) {
-          userStore(this.addForm).then(response => {
+          studentsStore(this.addForm).then(response => {
             if(response.status === 20000){
               this.$base.message({ message: response.message })
               this.addDialogVisible = false
@@ -512,7 +501,7 @@ export default {
     },
     // 状态调整
     setStatus(info) {
-      userStatus({id:info.id,status:info.status}).then(response => {
+      studentsStatus({id:info.id,status:info.status}).then(response => {
         if(response.status === 20000){
           this.$base.message({message:response.message})
         }else{
