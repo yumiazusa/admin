@@ -46,17 +46,17 @@
           <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="2" align="center" label="邮箱">
+      <el-table-column width="200px" align="center" label="邮箱">
         <template slot-scope="{row}">
           <span>{{ row.email }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="1" align="center" label="年级">
+      <el-table-column width="150px" align="center" label="年级">
         <template slot-scope="{row}">
           <span>{{ row.grade_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="1" align="center" label="班级">
+      <el-table-column width="150px" align="center" label="班级">
         <template slot-scope="{row}">
           <span>{{ row.class_id }}</span>
         </template>
@@ -84,12 +84,15 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" min-width="1" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-waves type="primary" size="mini" @click="edit(row.id)">
             编辑
           </el-button>
-          <el-button v-waves size="mini" type="success" @click="userUpdatePwd(row.id)">
+          <el-button v-waves size="mini" type="warning" @click="editPwd(row.id)">
+            修改密码
+          </el-button>
+          <el-button v-waves size="mini" type="success" @click="studentsUpdatePwd(row.id)">
             初始化密码
           </el-button>
         </template>
@@ -120,7 +123,7 @@
           <el-input placeholder="请输入手机号" maxlength="11" clearable show-word-limit v-model="addForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="editForm.email"></el-input>
+          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="addForm.email"></el-input>
         </el-form-item>
         <el-form-item label="年级" prop="grade_id">
           <el-input placeholder="请选择年级" maxlength="11" clearable show-word-limit v-model="addForm.grade_id"></el-input>
@@ -129,7 +132,7 @@
           <el-input placeholder="请选择班级" maxlength="11" clearable show-word-limit v-model="addForm.class_id"></el-input>
         </el-form-item>
         <el-form-item label="项目分类" prop="project_id">
-          <el-input placeholder="请选择项目分类" maxlength="11" clearable show-word-limit v-model="addForm.class_id"></el-input>
+          <el-input placeholder="请选择项目分类" maxlength="11" clearable show-word-limit v-model="addForm.project_id"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input type="password" placeholder="请输入密码" maxlength="14" clearable show-word-limit v-model="addForm.password"
@@ -165,26 +168,13 @@
     <el-dialog title="编辑" :visible.sync="editDialogVisible" width="80%" @close="editDialogClose">
       <!-- 主体区 -->
       <el-form label-width="100px" :model="editForm" :rules="editRules" ref="editRef">
+        <el-form-item label="学号" prop="stdid">
+          <el-input placeholder="请输入学号" maxlength="20" clearable show-word-limit v-model="editForm.stdid"
+          ></el-input>
+        </el-form-item>
         <el-form-item label="名称" prop="name">
           <el-input placeholder="请输入姓名" maxlength="20" clearable show-word-limit v-model="editForm.name"
           ></el-input>
-        </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input placeholder="请输入昵称" maxlength="20" clearable show-word-limit v-model="editForm.nickname"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="地址" prop="county_id">
-          <el-cascader :options="areaData"
-            placeholder="请选择地址"
-           :props="{
-              expandTrigger: 'hover',
-              value: 'id',
-              label: 'name',
-              checkStrictly: true
-            }" 
-            v-model="editValue"
-            @change="editHandleChange"
-            clearable style="width: 100%;"></el-cascader>
         </el-form-item>
         <el-form-item label="出生年月日" prop="birth">
             <el-date-picker
@@ -198,7 +188,16 @@
           <el-input placeholder="请输入手机号" maxlength="11" clearable show-word-limit v-model="editForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="addForm.email"></el-input>
+          <el-input placeholder="请输入邮箱" maxlength="50" clearable show-word-limit v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="年级" prop="grade_id">
+          <el-input placeholder="请选择年级" maxlength="11" clearable show-word-limit v-model="editForm.grade_id"></el-input>
+        </el-form-item>
+        <el-form-item label="班级" prop="class_id">
+          <el-input placeholder="请选择班级" maxlength="11" clearable show-word-limit v-model="editForm.class_id"></el-input>
+        </el-form-item>
+        <el-form-item label="项目分类" prop="project_id">
+          <el-input placeholder="请选择项目分类" maxlength="11" clearable show-word-limit v-model="editForm.project_id"></el-input>
         </el-form-item>
         <el-row :gutter="20">
           <el-col :span="10">
@@ -222,12 +221,33 @@
         <el-button v-waves type="primary" @click="update()" >确 定</el-button>
       </span>
     </el-dialog>  
+    <!--修改密码对话框  -->
+     <el-dialog title="修改密码" :visible.sync="editPwdDialogVisible" width="80%" @close="editPwdDialogClose">
+      <!-- 主体区 -->
+      <!-- <el-form label-width="100px" :model="editPwdForm" :rules="editPwdRules" ref="editPwdRef">
+        <el-form-item label="账号">
+          <el-input disabled v-model="name"></el-input> 
+        </el-form-item>
+        <el-form-item label="原密码" prop="y_password">
+          <el-input type="password" placeholder="请输入原密码" maxlength="14" clearable show-word-limit v-model="editAdminForm.y_password"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input type="password" placeholder="请输入密码" maxlength="14" clearable show-word-limit v-model="editAdminForm.password"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="password_confirmation">
+          <el-input type="password" placeholder="请输入确认密码" maxlength="14" clearable show-word-limit v-model="editAdminForm.password_confirmation"></el-input>
+        </el-form-item>
+      </el-form> -->
+      <span slot="footer" class="dialog-footer">
+        <el-button v-waves @click="editPwdDialogVisible = false">取 消</el-button>
+        <el-button v-waves type="primary" @click="update()" >确 定</el-button>
+      </span>
+    </el-dialog>  
   </div>
 </template>
 
 <script>
 import { studentsIndex,studentsStatus,studentsStore,studentsEdit,studentsUpdate,studentsUpdatePwd } from '@/api/students/students'
-import { getAreaData } from '@/api/admin/config'
 export default {
   name: 'StudentsIndex',
   data() {
@@ -238,6 +258,14 @@ export default {
         return callback();
       }
       callback(new Error("请输入正确的手机号!"));
+    };
+    var checkStdid = (rule, value, callback) => {
+      // 定义正则表达式
+      const regStdid = /^[0-9]{8,10}$/;
+      if (regStdid.test(value)) {
+        return callback();
+      }
+      callback(new Error("请输入8-10位的学号!"));
     };
     var checkEmail = (rule, value, callback) => {
       // 定义正则表达式
@@ -277,9 +305,15 @@ export default {
       addDialogVisible:false,
       editDialogVisible:false,
       downloadLoading: false,
+      editPwdDialogVisible:false,
       addForm: {
         name: "",
         phone:"",
+        email:"",
+        stdid:"",
+        class_id:"",
+        grade_id:"",
+        project_id:"",
         password: "",
         password_confirmation: "",
         status: 1,
@@ -290,10 +324,11 @@ export default {
         id: "",
         name: "",
         phone:"",
-        email: "",
-        province_id: null,
-        city_id: null,
-        county_id: null,
+        email:"",
+        stdid:"",
+        class_id:"",
+        grade_id:"",
+        project_id:"",
         status: 1,
         sex: 1,
         birth: ""
@@ -306,9 +341,17 @@ export default {
           { required: true, message: "请输入姓名！", trigger: "blur" },
           { min: 2, max: 20, message: "姓名长度在2到20个字符", trigger: "blur" }
         ],
+        stdid: [
+          { required: true, message: "请输入学号！", trigger: "blur" },
+          { validator: checkStdid, trigger: "blur" }
+        ],
         phone: [
           { required: true, message: "请输入手机号！", trigger: "blur" },
           { validator: checkPhone, trigger: "blur" }
+        ],
+        email: [
+          { required: true, message: "请输入邮箱！", trigger: "blur" },
+          { validator: checkEmail, trigger: "blur" }
         ],
         password: [
           { required: true, message: "请输入密码！", trigger: "blur" },
@@ -323,7 +366,14 @@ export default {
         birth: [
           { required: true, message: "请选择出生年月日！", trigger: "change" }
         ],  
-      
+        stdid: [
+          { required: true, message: "请输入学号！", trigger: "blur" },
+          { validator: checkStdid, trigger: "blur" }
+        ],
+        email: [
+          { required: true, message: "请输入邮箱！", trigger: "blur" },
+          { validator: checkEmail, trigger: "blur" }
+        ],
         name: [
           { required: true, message: "请输入姓名！", trigger: "blur" },
           { min: 2, max: 20, message: "姓名长度在2到20个字符", trigger: "blur" }
@@ -341,63 +391,17 @@ export default {
   },
   async created() {
     await this.getList()
-    await this.getAreaData()
   },
   methods: {
-    searchHandleChange() {
-      if (this.searchValue.length > 0) {
-        this.listQuery.province_id = this.searchValue[0]?this.searchValue[0]:null
-        this.listQuery.city_id = this.searchValue[1]?this.searchValue[1]:null
-        this.listQuery.county_id = this.searchValue[2]?this.searchValue[2]:null  
-      } else {
-        this.listQuery.province_id = null
-        this.listQuery.city_id = null
-        this.listQuery.county_id = null
-        this.searchValue = []
-      }
-      this.handleFilter()
-    },  
-    addHandleChange() {
-      if (this.addValue.length > 0) {
-        this.addForm.province_id = this.addValue[0]?this.addValue[0]:null
-        this.addForm.city_id = this.addValue[1]?this.addValue[1]:null
-        this.addForm.county_id = this.addValue[2]?this.addValue[2]:null  
-      } else {
-        this.addForm.province_id = null
-        this.addForm.city_id = null
-        this.addForm.county_id = null
-        this.addValue = []
-      }
-    }, 
-    editHandleChange() {
-      if (this.editValue.length > 0) {
-        this.editForm.province_id = this.editValue[0]?this.editValue[0]:null
-        this.editForm.city_id = this.editValue[1]?this.editValue[1]:null
-        this.editForm.county_id = this.editValue[2]?this.editValue[2]:null  
-      } else {
-        this.editForm.province_id = null
-        this.editForm.city_id = null
-        this.editForm.county_id = null
-        this.searchValue = []
-      }
-    }, 
     eventStartTime(val){
       this.listQuery.created_at = val
       this.handleFilter()
-    },
-    async getAreaData(){
-      getAreaData().then(response => {
-        if(response.status === 20000){
-          this.areaData = response.data
-        }
-      })
     },
     // 获取表格列表
     async getList() {
       this.listLoading = true
       studentsIndex(this.listQuery).then(response => {
         if(response.status === 20000){
-          console.log(response.data.list)
           this.list = response.data.list
           this.total = response.data.total
         }
@@ -426,6 +430,11 @@ export default {
       this.addForm = {
             name: "",
             phone:"",
+            eamil:"",
+            stdid:"",
+            class_id:"",
+            grade_id:"",
+            project_id:"",
             password: "",
             password_confirmation: "",
             status: 1,
@@ -461,7 +470,7 @@ export default {
     },
     // 打开编辑按钮对话框
     edit(id) {
-      userEdit({id:id}).then(response => {
+      studentsEdit({id:id}).then(response => {
         if(response.status === 20000){
           this.editDialogVisible = true
           this.editForm = response.data
@@ -473,7 +482,7 @@ export default {
     update() {
       this.$refs.editRef.validate(valid => {
         if (valid) {
-          userUpdate(this.editForm).then(response => {
+          studentsUpdate(this.editForm).then(response => {
             if(response.status === 20000){
               this.$base.message({ message: response.message })
               this.editDialogVisible = false
@@ -489,11 +498,13 @@ export default {
             id: "",
             name: "",
             phone:"",
-            email: "",
-            nickname:"",
-            province_id: null,
-            city_id: null,
-            county_id: null,
+            eamil:"",
+            stdid:"",
+            class_id:"",
+            grade_id:"",
+            project_id:"",
+            password: "",
+            password_confirmation: "",
             status: 1,
             sex: 1,
             birth: ""
@@ -501,12 +512,22 @@ export default {
       this.editValue = []
       this.$refs.editRef.resetFields()
     },
+    editPwd(id) {
+         this.editPwdDialogVisible = true
+      // studentsEdit({id:id}).then(response => {
+      //   if(response.status === 20000){
+      //     this.editDialogVisible = true
+      //     this.editForm = response.data
+      //     this.editValue = [response.data.province_id,response.data.city_id,response.data.county_id]
+      //   }
+      // })
+    },
     // 初始化密码
-    userUpdatePwd(id) {
+    studentsUpdatePwd(id) {
       this.$base.confirm(
         { content: "确定要初始化该管理员的密码为（123456）吗！" },
         () => {
-          userUpdatePwd({id:id}).then(response => {
+          studentsUpdatePwd({id:id}).then(response => {
             if(response.status === 20000){
               this.$base.message({ message: response.message })
             }
