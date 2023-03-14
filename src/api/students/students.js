@@ -40,6 +40,15 @@ export function studentsUpdate(data) {
       data:data
   })
 }
+//修改密码
+export function studentsChangePwd(data){
+  return request({
+    url: '/students/students/changePwd',
+    method: 'put',
+    data:data
+})
+}
+
 // 初始化密码
 export function studentsUpdatePwd(data) {
   return request({

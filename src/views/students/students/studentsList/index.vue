@@ -89,7 +89,7 @@
           <el-button v-waves type="primary" size="mini" @click="edit(row.id)">
             编辑
           </el-button>
-          <el-button v-waves size="mini" type="warning" @click="editPwd(row.id)">
+          <el-button v-waves size="mini" type="warning" @click="editPwd(row.id,row.name)">
             修改密码
           </el-button>
           <el-button v-waves size="mini" type="success" @click="studentsUpdatePwd(row.id)">
@@ -222,32 +222,32 @@
       </span>
     </el-dialog>  
     <!--修改密码对话框  -->
-     <el-dialog title="修改密码" :visible.sync="editPwdDialogVisible" width="80%" @close="editPwdDialogClose" ref="editStdPwdRef">
+     <el-dialog title="修改密码" :visible.sync="editPwdDialogVisible" width="30%" @close="editPwdDialogClose" ref="editStdPwdRef">
       <!-- 主体区 -->
-      <!-- <el-form label-width="100px" :model="editPwdForm" :rules="editPwdRules" ref="editPwdRef">
+      <el-form label-width="100px" :model="editPwdForm" :rules="editPwdRules" ref="editPwdRef">
         <el-form-item label="账号">
-          <el-input disabled v-model="name"></el-input> 
+          <el-input disabled v-model="editPwdForm.name"></el-input> 
         </el-form-item>
         <el-form-item label="原密码" prop="y_password">
-          <el-input type="password" placeholder="请输入原密码" maxlength="14" clearable show-word-limit v-model="editAdminForm.y_password"></el-input>
+          <el-input type="password" placeholder="请输入原密码" maxlength="14" clearable show-word-limit v-model="editPwdForm.y_password"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input type="password" placeholder="请输入密码" maxlength="14" clearable show-word-limit v-model="editAdminForm.password"></el-input>
+          <el-input type="password" placeholder="请输入密码" maxlength="14" clearable show-word-limit v-model="editPwdForm.password"></el-input>
         </el-form-item>
         <el-form-item label="确认密码" prop="password_confirmation">
-          <el-input type="password" placeholder="请输入确认密码" maxlength="14" clearable show-word-limit v-model="editAdminForm.password_confirmation"></el-input>
+          <el-input type="password" placeholder="请输入确认密码" maxlength="14" clearable show-word-limit v-model="editPwdForm.password_confirmation"></el-input>
         </el-form-item>
-      </el-form> -->
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button v-waves @click="editPwdDialogVisible = false">取 消</el-button>
-        <el-button v-waves type="primary" @click="update()" >确 定</el-button>
+        <el-button v-waves type="primary" @click="updatePwd()" >确 定</el-button>
       </span>
     </el-dialog>  
   </div>
 </template>
 
 <script>
-import { studentsIndex,studentsStatus,studentsStore,studentsEdit,studentsUpdate,studentsUpdatePwd } from '@/api/students/students'
+import { studentsIndex,studentsStatus,studentsStore,studentsEdit,studentsUpdate,studentsUpdatePwd,studentsChangePwd} from '@/api/students/students'
 export default {
   name: 'StudentsIndex',
   data() {
@@ -289,6 +289,21 @@ export default {
       } else {
         return callback();
       }
+    };
+    var changePasswordConfirmation = (rule, value, callback) => {
+      if (value !== this.editPwdForm.password) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        return callback();
+      }
+    };
+    var checkYpassword = (rule, value, callback) => {
+      // 定义正则表达式
+      const regYpassword = /^[a-zA-Z0-9]{4,14}$/;
+      if (regYpassword.test(value)) {
+        return callback();
+      }
+      callback(new Error("原密码必须4到14位的数字或字母!"));
     };
     return {
       statusList:['拉黑','正常'],  
@@ -332,6 +347,13 @@ export default {
         status: 1,
         sex: 1,
         birth: ""
+      },
+      editPwdForm:{
+         // 修改密码数据
+        name:"",
+        y_password: "",
+        password: "",
+        password_confirmation: "",
       },
       addRules: {
         birth: [
@@ -383,9 +405,22 @@ export default {
           { validator: checkPhone, trigger: "blur" }
         ],
       },
+      editPwdRules:{
+        y_password: [
+          { required: true, message: "请输入原密码！", trigger: "blur" },
+          { validator: checkYpassword, trigger: "blur" }
+        ],
+        password: [
+          { required: true, message: "请输入密码！", trigger: "blur" },
+          { validator: checkPassword, trigger: "blur" }
+        ],
+        password_confirmation: [
+          { required: true, message: "请输入确认密码！", trigger: "blur" },
+          { validator: changePasswordConfirmation, trigger: "blur" }
+        ]
+      },
       searchValue:[],
       addValue:[],
-      editValue:[],
       sexList:['未知','男','女']
     }
   },
@@ -470,11 +505,11 @@ export default {
     },
     // 打开编辑按钮对话框
     edit(id) {
+          this.editDialogVisible = true
       studentsEdit({id:id}).then(response => {
         if(response.status === 20000){
           this.editDialogVisible = true
           this.editForm = response.data
-          this.editValue = [response.data.province_id,response.data.city_id,response.data.county_id]
         }
       })
     },
@@ -509,22 +544,40 @@ export default {
             sex: 1,
             birth: ""
       }
-      this.editValue = []
       this.$refs.editRef.resetFields()
     },
-    editPwd(id) {
+    editPwd(id,name) {
          this.editPwdDialogVisible = true
-      // studentsEdit({id:id}).then(response => {
-      //   if(response.status === 20000){
-      //     this.editDialogVisible = true
-      //     this.editForm = response.data
-      //     this.editValue = [response.data.province_id,response.data.city_id,response.data.county_id]
-      //   }
-      // })
+         this.editPwdForm.name = name
     },
      // 监听编辑对话框的关闭事件
      editPwdDialogClose() {
+      this.editPwdForm={
+        name:"",
+        y_password:"",
+        password:"",
+        password_confirmation:""
+      }
       this.$refs.editPwdRef.resetFields()
+    },
+    //修改密码
+    updatePwd() {
+      this.$base.confirm(
+        { content: "确定要修改密码吗？" },
+        () => {
+          this.$refs.editPwdRef.validate(valid => {
+        if (valid) {
+          studentsChangePwd(this.editPwdForm).then(response => {
+            if(response.status === 20000){
+              this.$base.message({ message: response.message })
+              this.editPwdDialogVisible = false
+              this.getList()
+            }
+          })
+        }
+      })
+        }
+      )
     },
     // 初始化密码
     studentsUpdatePwd(id) {
