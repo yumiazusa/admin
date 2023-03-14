@@ -51,12 +51,12 @@
           <span>{{ row.email }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="150px" align="center" label="年级">
+      <el-table-column width="100px" align="center" label="年级">
         <template slot-scope="{row}">
           <span>{{ row.grade_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="150px" align="center" label="班级">
+      <el-table-column width="100px" align="center" label="班级">
         <template slot-scope="{row}">
           <span>{{ row.class_id }}</span>
         </template>
@@ -222,7 +222,7 @@
       </span>
     </el-dialog>  
     <!--修改密码对话框  -->
-     <el-dialog title="修改密码" :visible.sync="editPwdDialogVisible" width="80%" @close="editPwdDialogClose">
+     <el-dialog title="修改密码" :visible.sync="editPwdDialogVisible" width="80%" @close="editPwdDialogClose" ref="editStdPwdRef">
       <!-- 主体区 -->
       <!-- <el-form label-width="100px" :model="editPwdForm" :rules="editPwdRules" ref="editPwdRef">
         <el-form-item label="账号">
@@ -521,6 +521,10 @@ export default {
       //     this.editValue = [response.data.province_id,response.data.city_id,response.data.county_id]
       //   }
       // })
+    },
+     // 监听编辑对话框的关闭事件
+     editPwdDialogClose() {
+      this.$refs.editPwdRef.resetFields()
     },
     // 初始化密码
     studentsUpdatePwd(id) {
