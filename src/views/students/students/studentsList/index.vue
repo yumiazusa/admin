@@ -167,7 +167,7 @@
     <!-- 编辑对话框 -->
     <el-dialog title="编辑" :visible.sync="editDialogVisible" width="80%" @close="editDialogClose">
       <!-- 主体区 -->
-      <el-form label-width="100px" :model="editForm" :rules="editRules" ref="editRef">
+      <el-form v-loading="loading" label-width="100px" :model="editForm" :rules="editRules" ref="editRef">
         <el-form-item label="学号" prop="stdid">
           <el-input placeholder="请输入学号" maxlength="20" clearable show-word-limit v-model="editForm.stdid"
           ></el-input>
@@ -218,13 +218,16 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button v-waves @click="editDialogVisible = false">取 消</el-button>
-        <el-button v-waves type="primary" @click="update()" >确 定</el-button>
+        <el-button v-waves type="primary" @click="update()" :loading="submiting">确 定</el-button>
       </span>
     </el-dialog>  
     <!--修改密码对话框  -->
      <el-dialog title="修改密码" :visible.sync="editPwdDialogVisible" width="30%" @close="editPwdDialogClose" ref="editStdPwdRef">
       <!-- 主体区 -->
-      <el-form label-width="100px" :model="editPwdForm" :rules="editPwdRules" ref="editPwdRef">
+      <el-form v-loading="loading" label-width="100px" :model="editPwdForm" :rules="editPwdRules" ref="editPwdRef">
+      <el-form-item  v-if="showEl==true" type="hidden" prop="id">
+        <el-input  v-model="editPwdForm.id"></el-input>
+      </el-form-item>
         <el-form-item label="账号">
           <el-input disabled v-model="editPwdForm.name"></el-input> 
         </el-form-item>
@@ -240,7 +243,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button v-waves @click="editPwdDialogVisible = false">取 消</el-button>
-        <el-button v-waves type="primary" @click="updatePwd()" >确 定</el-button>
+        <el-button v-waves type="primary" @click="updatePwd()" :loading="submiting">确 定</el-button>
       </span>
     </el-dialog>  
   </div>
@@ -310,6 +313,9 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      showEl:false,
+      loading: false,
+      submiting: false,
       listQuery: {
         page: 1,
         limit: 10,
@@ -350,6 +356,7 @@ export default {
       },
       editPwdForm:{
          // 修改密码数据
+        id:"",
         name:"",
         y_password: "",
         password: "",
@@ -505,26 +512,34 @@ export default {
     },
     // 打开编辑按钮对话框
     edit(id) {
+          this.loading = true
           this.editDialogVisible = true
       studentsEdit({id:id}).then(response => {
         if(response.status === 20000){
           this.editDialogVisible = true
+          this.loading = false
           this.editForm = response.data
         }
       })
     },
     // 提交编辑数据
     update() {
+      this.loading = true
+      this.submiting = true
       this.$refs.editRef.validate(valid => {
         if (valid) {
           studentsUpdate(this.editForm).then(response => {
             if(response.status === 20000){
               this.$base.message({ message: response.message })
               this.editDialogVisible = false
+              this.loading = false
+              this.submiting = false
               this.getList()
             }
           })
         }
+        this.loading = false
+        this.submiting = false
       })
     },
     // 监听编辑对话框的关闭事件
@@ -545,23 +560,31 @@ export default {
             birth: ""
       }
       this.$refs.editRef.resetFields()
+      this.loading = false
+      this.submiting = false
     },
     editPwd(id,name) {
          this.editPwdDialogVisible = true
          this.editPwdForm.name = name
+         this.editPwdForm.id = id
     },
      // 监听编辑对话框的关闭事件
      editPwdDialogClose() {
       this.editPwdForm={
+        id:"",
         name:"",
         y_password:"",
         password:"",
         password_confirmation:""
       }
+      this.loading = false
+      this.submiting = false
       this.$refs.editPwdRef.resetFields()
     },
     //修改密码
     updatePwd() {
+      this.loading = true
+      this.submiting = true
       this.$base.confirm(
         { content: "确定要修改密码吗？" },
         () => {
@@ -571,10 +594,14 @@ export default {
             if(response.status === 20000){
               this.$base.message({ message: response.message })
               this.editPwdDialogVisible = false
+              this.loading = false
+              this.submiting = false
               this.getList()
             }
           })
         }
+        this.loading = false
+        this.submiting = false
       })
         }
       )
