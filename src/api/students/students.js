@@ -1,3 +1,12 @@
+/*
+ * @Author: yumiazusa yumiazusa@hotmail.com
+ * @Date: 2023-03-14 23:51:48
+ * @LastEditors: yumiazusa yumiazusa@hotmail.com
+ * @LastEditTime: 2023-03-21 14:22:26
+ * @FilePath: /www/miledo/admin/src/api/students/students.js
+ * @Description: 学生管理API
+ */
+
 import request from '@/utils/request'
 // 管理员列表
 export function studentsIndex(data) {
