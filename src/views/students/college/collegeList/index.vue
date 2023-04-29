@@ -1,47 +1,45 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="add('college')">
+          添加学院
+        </el-button>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="add('grade')">
+          添加年级
+        </el-button>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="add('department')">
+          添加系部
+        </el-button>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="add('level')">
+          添加层次
+        </el-button>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="add()">
           添加模块
         </el-button>
     </div>
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" row-key="id">
-      <el-table-column width="120px" label="项目">
-        <template slot-scope="{row}">
-          <span>{{ levelList[row.level-1] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="200px" align="center" label="学院年级班级名称">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" row-key="id"
+    :tree-props="{children: 'children'}">
+      <el-table-column min-width="2" label="项目">
         <template slot-scope="{row}">
           <span>
             <span v-if="row.icon">
               <i :class="'e-icon ' + row.icon"></i>
             </span>
-            {{ row.name }}
+            {{ row.title }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="100px" align="center" label="路由文件">
+      <!-- <el-table-column width="100px" align="center" label="路由文件">
         <template slot-scope="{row}">
           <span>{{ row.url }}</span>
         </template>
-      </el-table-column>
-      <el-table-column width="100px" align="center" label="重定向路径">
-        <template slot-scope="{row}">
-          <span>{{ row.redirect }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="80px" align="center" label="菜单类型">
-        <template slot-scope="{row}">
-          <span>{{ typeList[row.type-1] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="排序" align="center" prop="sort" width="80" sortable>
+      </el-table-column> -->
+      <el-table-column label="排序" align="center" prop="sort" width="100px" sortable>
         <template slot-scope="{row}">
           <el-input v-model="row.sort" @blur="setSorts(row)"></el-input>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="状态" prop="status" width="80px">
+      <el-table-column align="center" label="状态" prop="status" width="100px">
         <template slot-scope="{row}">
           <el-tooltip
             effect="dark"
@@ -59,25 +57,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="验证权限" prop="auth_open" width="80px">
-        <template slot-scope="{row}">
-          <el-tooltip
-            effect="dark"
-            :content="row.auth_open===1 ? '是' : '否'"
-            placement="top"
-            :enterable="false">
-            <el-switch
-              v-model="row.auth_open"
-              active-color="#5FB878"
-              inactive-color="#d2d2d2"
-              :active-value="1"
-              :inactive-value="0"
-              @change="setAuthOpen(row)"
-            ></el-switch>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="固定面板" prop="affix" width="80px">
+      <el-table-column align="center" label="固定面板" prop="affix" width="100px">
         <template slot-scope="{row}">
           <el-tooltip
             effect="dark"
@@ -95,7 +75,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" min-width="5">
         <template slot-scope="{row}">
           <el-button v-waves type="success" size="mini" @click="collegePidArr(row.id)">
             添加下级
@@ -110,80 +90,22 @@
       </el-table-column>
     </el-table> 
     <!-- 添加编辑对话框 -->
-    <el-dialog   :title="title" :visible.sync="dialogVisible" width="80%" @close="dialogClose">
-      <el-form label-width="100px" :model="form" :rules="rules" ref="ref">
-        <el-form-item label="父级">
-          <el-cascader :options="list"
-            placeholder="默认顶级"
-           :props="{
-              expandTrigger: 'hover',
-              value: 'id',
-              label: 'name',
-              checkStrictly: true
-            }" 
-            v-model="value"
-            @change="handleChange"
-            clearable style="width:100%"></el-cascader>
+    <el-dialog   :title="'添加'+ title " :visible.sync="dialogVisible" width="60%" @close="dialogClose">
+      <el-form label-width="100px" :model="form" :rules="rules" ref="ref">  
+        <el-form-item  v-if="true" prop="type">
+        <el-input v-model="type"></el-input>
         </el-form-item>
-        
-        <el-form-item label="图标">
-          <icon-picker v-model="form.icon"></icon-picker>
-        </el-form-item>
-        <el-form-item label="权限名称" prop="name">
-          <el-input placeholder="请输入权限名称" maxlength="100" clearable show-word-limit v-model="form.name"
+        <el-form-item :label="title" prop="title">
+          <el-input :placeholder="'请输入'+ title + '名称'" maxlength="100" clearable show-word-limit v-model="form.title"
           ></el-input>
-        </el-form-item>
-        <el-form-item label="菜单类型">
-          <el-radio-group v-model="form.type" size="medium">
-            <el-radio border :label="1">模块</el-radio>
-            <el-radio border :label="2">目录</el-radio>
-            <el-radio border :label="3">菜单</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="标识">
-          <el-input placeholder="请输入标识" maxlength="100" clearable show-word-limit v-model="form.path"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="路由文件">
-          <el-input placeholder="请输入路由文件" maxlength="100" clearable show-word-limit v-model="form.url"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="重定向路径">
-          <el-input placeholder="请输入重定向路径" maxlength="100" clearable show-word-limit v-model="form.redirect"
-          ></el-input>
-        </el-form-item>
-        
-        <el-form-item label="显示状态">
-          <el-radio-group v-model="form.status" size="medium">
-            <el-radio border :label="0">隐藏</el-radio>
-            <el-radio border :label="1">显示</el-radio>
-          </el-radio-group>
-        </el-form-item>
+        </el-form-item>    
         <el-form-item label="排序" prop="sort">
           <el-input type="number" placeholder="请输入排序" maxlength="10" clearable show-word-limit v-model="form.sort"></el-input>
         </el-form-item>
-        <el-row :gutter="20">
-          <el-col :span="10">
-            <el-form-item label="验证权限">
-              <el-radio-group v-model="form.auth_open" size="medium">
-                <el-radio border :label="0">否</el-radio>
-                <el-radio border :label="1">是</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item label="固定面板">
-              <el-radio-group v-model="form.affix" size="medium">
-                <el-radio border :label="0">否</el-radio>
-                <el-radio border :label="1">是</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button v-waves @click="dialogVisible = false">取 消</el-button>
-        <el-button v-waves type="primary" @click="primary()">确 定</el-button>
+        <el-button v-waves type="primary" @click="primary(type)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -191,11 +113,9 @@
 
 <script>
 // import { ruleIndex,ruleStatus,ruleOpen,ruleAffix,ruleUpdate,ruleStore,ruleEdit,ruleDestroy,ruleSorts,rulePidArr } from '@/api/admin/rule.js'
-import { collegeIndex,collegeStatus,collegeOpen,collegeAffix } from '@/api/students/college.js'
-import {iconPicker} from 'vue-fontawesome-elementui-icon-picker' 
+import { collegeIndex,collegeUpdate,collegeStatus,collegeOpen,collegeAffix } from '@/api/students/college.js'
 export default {
   name: 'CollegeIndex',
-  components: { iconPicker},
   data() {
     var checkSort = (rule, value, callback) => {
       // 定义正则表达式
@@ -203,58 +123,35 @@ export default {
       if (regSort.test(value)) {
         return callback();
       }
-      callback(new Error("请输入排序（大于0的数字）!"));
+      callback(new Error("请输入排序(大于0的数字)!"));
     };
     return {
-      icon: '',
-      options: {
-          FontAwesome: true,
-          ElementUI: true,
-          eIcon: true,//自带的图标，来自阿里妈妈
-          eIconSymbol: true,//是否开启彩色图标
-          addIconList: [],
-          removeIconList: []
-      },
       list: [],
+      title:'',
+      type:'',
       listLoading: true,
       dialogVisible:false,
-      typeList:[
-        '模块',
-        '目录',
-        '菜单'
-      ],
-      levelList:[
-        '学院',
-        '年级',
-        '系部',
-        '班级'
-      ],
-      value: [], // 权限选项数据选择的数据
+      typeList:{
+        college:"学院",
+        grade:"年级",
+        department:'系部',
+        level:'层次',
+        class:'班级'
+      },
       form: {
-        id: "",
-        pid: 0,
-        path: '',
-        url: '',
-        redirect: '',
-        name: '',
-        type: 1,
-        status: 1,
-        auth_open: 1,
-        level:1,
-        affix:0,
-        icon:'',
+        type:'',
+        title:'',
         sort:1,
       },
       rules: {
-        name: [
-          { required: true, message: "请输入权限名称！", trigger: "blur" }
+        title: [
+          { required: true, message: "请输入必要信息", trigger: "blur" }
         ],
         sort: [
           { required: true, message: "请输入排序！", trigger: "blur" },
           { validator: checkSort, trigger: "blur" }
         ]
-      },
-      title:''
+      }
     }
   },
   async created() {
@@ -266,27 +163,17 @@ export default {
       this.listLoading = true
       collegeIndex().then(response => {
         if(response.status === 20000){
-          this.list = response.data
+          this.list = response.data[4]
+          this.collegeList = response.data[0]
         }
         this.listLoading = false
       })
     },
     // 监听添加编辑对话框的关闭事件
     dialogClose() {
-      this.value = []
       this.form = {
-        id: "",
-        pid: 0,
-        path: '',
-        url: '',
-        redirect: '',
-        name: '',
-        type: 1,
-        status: 1,
-        auth_open: 1,
-        level:1,
-        affix:0,
-        icon:'',
+        type:'',
+        title:'',
         sort:1,
       }
     },
@@ -300,21 +187,40 @@ export default {
         this.form.level = 1;
       }
     },
-    add(){
+    add(type){
+      switch (type) { //想要判断的变量
+        case 'college': //状态一
+        this.title = '学院'
+        this.type = type
+          break
+        case 'grade': //状态二
+        this.title = '年级'
+        this.type = type
+          break
+        case 'department'://状态三
+        this.title = '系部'
+        this.type = type
+          break
+          case 'level'://状态四
+        this.title = '层次'
+        this.type = type
+          break
+      }
       this.dialogVisible = true
-      this.title = '添加'
     },
     // 添加编辑按钮
-    primary() {
+    primary(type) {
+      console.log(this.form)
       this.$refs.ref.validate(valid => {
         if (valid) {
-          if(this.form.id){
+          if(type){
             collegeUpdate(this.form).then(response => {
-              if(response.status === 20000){
-                this.$base.message({ message: response.message })
-                this.dialogVisible = false
-                this.getList()
-              }
+              console.log(response)
+              // if(response.status === 20000){
+              //   this.$base.message({ message: response.message })
+              //   this.dialogVisible = false
+              //   this.getList()
+              // }
             })
           }else{
             collegeStore(this.form).then(response => {

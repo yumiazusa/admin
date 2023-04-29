@@ -21,17 +21,17 @@
       </div>
     </div>
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="编号" width="60px">
+      <el-table-column align="center" label="编号" width="50px">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="120px" align="center" label="学号">
+      <el-table-column width="100px" align="center" label="学号">
         <template slot-scope="{row}">
           <span>{{ row.stdid }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="120px" align="center" label="姓名">
+      <el-table-column width="100px" align="center" label="姓名">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -41,7 +41,7 @@
           <span>{{ sexList[row.sex] }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="130px" align="center" label="手机号">
+      <el-table-column width="120px" align="center" label="手机号">
         <template slot-scope="{row}">
           <span>{{ row.phone }}</span>
         </template>
@@ -61,11 +61,11 @@
           <span>{{ row.class_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="160px" align="center" label="创建时间">
+      <!-- <el-table-column width="160px" align="center" label="创建时间">
         <template slot-scope="{row}">
           <span>{{ row.created_at }}</span>
-        </template>
-      </el-table-column>
+        </template> -->
+      <!-- </el-table-column> -->
       <el-table-column align="center" label="状态" prop="status" width="80">
         <template slot-scope="{row}">
           <el-tooltip
@@ -84,7 +84,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" min-width="1" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" min-width="2" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-waves type="primary" size="mini" @click="edit(row.id)">
             编辑
