@@ -23,7 +23,7 @@ export function collegeStatus(data) {
         data:data
     })
 }
-// 添加管理员
+// 添加学院年级系部层次
 export function collegeStore(data) {
   return request({
       url: '/students/college/store',
@@ -31,8 +31,30 @@ export function collegeStore(data) {
       data:data
   })
 }
-
-// 编辑页面数据
+// 获取学院年级系部层次选择列
+export function getAttrList() {
+  return request({
+    url: '/students/college/attr',
+    method: 'get'
+  })
+}
+// 添加班级
+export function classStore(data) {
+  return request({
+      url: '/students/college/classStore',
+      method: 'post',
+      data:data
+  })
+}
+// 编辑班级信息
+export function classEdit(id,type) {
+  return request({
+      url: '/students/college/edit',
+      method: 'get',
+      params:{'id':id,'type':type}
+  })
+}
+// 编辑学院年级系部层次班级
 export function collegeEdit(data) {
   return request({
       url: '/students/college/edit',
