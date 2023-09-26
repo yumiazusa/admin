@@ -4,8 +4,17 @@
       <el-button
         v-waves
         class="filter-item"
+        type="success"
+        icon="el-icon-refresh"
+        @click="refresh()"
+      >
+        刷新列表
+      </el-button>
+      <el-button
+        v-waves
+        class="filter-item"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-plus"
         @click="add('college')"
       >
         添加学院
@@ -14,7 +23,7 @@
         v-waves
         class="filter-item"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-plus"
         @click="add('grade')"
       >
         添加年级
@@ -23,7 +32,7 @@
         v-waves
         class="filter-item"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-plus"
         @click="add('department')"
       >
         添加系部
@@ -32,7 +41,7 @@
         v-waves
         class="filter-item"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-plus"
         @click="add('level')"
       >
         添加层次
@@ -41,13 +50,35 @@
         v-waves
         class="filter-item"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-plus"
         @click="addClass()"
       >
         添加班级
       </el-button>
+      <el-button
+        v-show="del"
+        v-waves
+        class="filter-item"
+        type="info"
+        icon="el-icon-delete"
+        @click="delList()"
+      >
+        回收站
+      </el-button>
+      <el-button
+        v-show="back"
+        v-waves
+        class="filter-item"
+        type="info"
+        icon="el-icon-back"
+        @click="getList()"
+      >
+        返回
+      </el-button>
     </div>
+    <!-- 学院年级系部层次班级列表 -->
     <el-table
+      v-show="mainList"
       v-loading="loading"
       :data="list"
       border
@@ -56,6 +87,7 @@
       style="width: 100%"
       row-key="id"
       :tree-props="{ children: 'children' }"
+      empty-text="暂无数据"
     >
       <el-table-column min-width="2" label="项目">
         <template slot-scope="{ row }">
@@ -84,12 +116,169 @@
             :enterable="false"
           >
             <el-switch
+              v-if="row.type === 'class'"
               v-model="row.status"
               active-color="#5FB878"
               inactive-color="#d2d2d2"
               :active-value="1"
               :inactive-value="0"
               @change="setStatus(row)"
+            ></el-switch>
+            <el-switch
+              v-else
+              v-model="row.status"
+              active-color="#5FB878"
+              inactive-color="#d2d2d2"
+              :active-value="1"
+              :inactive-value="0"
+              disabled
+              @change="setStatus(row)"
+            ></el-switch>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
+        label="固定面板"
+        prop="affix"
+        width="100px"
+      >
+        <template slot-scope="{ row }">
+          <el-tooltip
+            effect="dark"
+            :content="row.affix === 1 ? '是' : '否'"
+            placement="top"
+            :enterable="false"
+          >
+            <el-switch
+              v-if="row.type === 'class'"
+              v-model="row.affix"
+              active-color="#5FB878"
+              inactive-color="#d2d2d2"
+              :active-value="1"
+              :inactive-value="0"
+              @change="setAffix(row)"
+            ></el-switch>
+            <el-switch
+              v-else
+              v-model="row.affix"
+              active-color="#5FB878"
+              inactive-color="#d2d2d2"
+              :active-value="1"
+              :inactive-value="0"
+              disabled
+              @change="setAffix(row)"
+            ></el-switch>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        min-width="5"
+      >
+        <template slot-scope="{ row }">
+          <el-button
+            v-waves
+            class="filter-item"
+            type="primary"
+            size="mini"
+            icon="el-icon-s-custom"
+            v-if="row.type === 'class'"
+            @click="studentsForm(row.class_id)"
+          >
+            学生列表
+          </el-button>
+          <el-button
+            v-if="row.type === 'class'"
+            v-waves
+            type="primary"
+            size="mini"
+            icon="el-icon-edit"
+            @click="edit(row.type, row.class_id)"
+          >
+            编辑
+          </el-button>
+          <el-button
+            v-else
+            v-waves
+            type="primary"
+            size="mini"
+            icon="el-icon-edit"
+            @click="edit(row.type, row.type_id)"
+          >
+            编辑
+          </el-button>
+          <el-button
+            v-waves
+            size="mini"
+            type="danger"
+            icon="el-icon-delete"
+            v-if="row.type === 'class'"
+            @click="collegeDestroy(row.class_id)"
+          >
+            删除
+          </el-button>
+          <!-- <el-upload
+            v-if="row.type === 'class'"
+            class="upload-demo"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            multiple
+            :limit="3"
+            :on-exceed="handleExceed"
+            style="display: inline-block; margin-left: 10px;"
+          >
+            <el-button size="mini" type="primary">点击上传</el-button>
+          </el-upload> -->
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 回收站列表 -->
+    <el-table
+      v-show="deleList"
+      v-loading="loading"
+      :data="deleteList"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+      empty-text="回收站无数据"
+    >
+      <el-table-column min-width="1" align="center" label="班级">
+        <template slot-scope="{ row }">
+          <span>{{ row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="排序"
+        align="center"
+        prop="sort"
+        width="100px"
+        sortable
+      >
+        <template slot-scope="{ row }">
+          <el-input disabled v-model="row.sort"></el-input>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="状态" prop="status" width="100px">
+        <template slot-scope="{ row }">
+          <el-tooltip
+            effect="dark"
+            :content="row.status === 1 ? '显示' : '隐藏'"
+            placement="top"
+            :enterable="false"
+          >
+            <el-switch
+              v-model="row.status"
+              active-color="#5FB878"
+              inactive-color="#d2d2d2"
+              :active-value="1"
+              :inactive-value="0"
+              disabled
             ></el-switch>
           </el-tooltip>
         </template>
@@ -113,7 +302,7 @@
               inactive-color="#d2d2d2"
               :active-value="1"
               :inactive-value="0"
-              @change="setAffix(row)"
+              disabled
             ></el-switch>
           </el-tooltip>
         </template>
@@ -122,44 +311,26 @@
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
-        min-width="5"
+        min-width="2"
       >
         <template slot-scope="{ row }">
           <el-button
             v-waves
-            type="success"
-            size="mini"
-            v-if="row.type === 'level'"
-            @click="collegePidArr(row.id)"
-          >
-            添加班级
-          </el-button>
-          <el-button
-            v-if="row.type === 'class'"
-            v-waves
             type="primary"
             size="mini"
-            @click="edit(row.type, row.class_id)"
+            icon="el-icon-refresh-left"
+            @click="recycle(row.id)"
           >
-            编辑
-          </el-button>
-          <el-button
-            v-else
-            v-waves
-            type="primary"
-            size="mini"
-            @click="edit(row.type, row.type_id)"
-          >
-            编辑2
+            回收
           </el-button>
           <el-button
             v-waves
             size="mini"
             type="danger"
-            v-if="row.type === 'class'"
-            @click="collegeDestroy(row.id)"
+            icon="el-icon-delete-solid"
+            @click="realDestroy(row.id)"
           >
-            删除
+            彻底删除
           </el-button>
         </template>
       </el-table-column>
@@ -234,7 +405,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button v-waves @click="editCollegeVisible = false">取 消</el-button>
-        <el-button v-waves type="primary" @click="primary(type)"
+        <el-button v-waves type="primary" @click="updateCollege()"
           >确 定</el-button
         >
       </span>
@@ -432,10 +603,14 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editClassVisible = false">取 消</el-button>
-        <el-button type="primary" @click="primaryClass()" :loading="submiting"
+        <el-button type="primary" @click="updateClass()" :loading="submiting"
           >确 定</el-button
         >
       </div>
+    </el-dialog>
+    <!-- 班级学生列表对话框 -->
+    <el-dialog width="90%" top="20px" :visible.sync="studentsFormVisible"  @close="studentsFormClose">
+      <students :classid="classid" :isProps="false"></students>
     </el-dialog>
   </div>
 </template>
@@ -443,18 +618,24 @@
 <script>
 import {
   collegeIndex,
+  deleteList,
   collegeStore,
   getAttrList,
   classStore,
   classEdit,
   collegeUpdate,
-  collegeEdit,
+  classUpdate,
   collegeStatus,
-  collegeOpen,
+  collegeSorts,
   collegeAffix,
+  collegeDestroy,
+  collegeRecycle,
+  realDestroy,
 } from "@/api/students/college.js";
+import Students from "@/views/students/students/studentsList/index.vue";
 export default {
   name: "CollegeIndex",
+  components: { Students },
   data() {
     var checkSort = (rule, value, callback) => {
       // 定义正则表达式
@@ -466,18 +647,23 @@ export default {
     };
     return {
       list: [],
+      deleteList: [],
       title: "",
       type: "",
       id: "",
       typename: "",
       collegeList: [],
       collegeData: [],
+      classid:'',
       submiting: false,
       loading: false,
       dialogVisible: false,
       dialogClassVisible: false,
       editClassVisible: false,
       editCollegeVisible: false,
+      studentsFormVisible: false,
+      deleList: false,
+      mainList: true,
       typeList: {
         college: "学院",
         grade: "年级",
@@ -533,6 +719,9 @@ export default {
       grade: [],
       department: [],
       level: [],
+      sorts: [],
+      del: true,
+      back: false,
     };
   },
   async created() {
@@ -546,11 +735,36 @@ export default {
         if (response.status === 20000) {
           this.list = response.data[4];
           this.collegeList = response.data[0];
+          this.deleteList = [];
         }
+        this.mainList = true;
+        this.deleList = false;
+        this.del = true;
+        this.back = false;
         this.loading = false;
       });
     },
-    // 监听添加编辑对话框的关闭事件
+    //回收站列表
+    delList() {
+      this.loading = true;
+      deleteList().then((response) => {
+        if (response.status === 20000) {
+          this.deleteList = response.data[4];
+          this.list = [];
+        }
+        this.deleList = true;
+        this.mainList = false;
+        this.del = false;
+        this.back = true;
+        this.loading = false;
+      });
+    },
+    //刷新主列表
+    refresh() {
+      this.getList();
+      this.deleteList = [];
+    },
+    // 监听添加学院年级系部层次对话框的关闭事件
     dialogClose() {
       this.form = {
         type: "",
@@ -558,6 +772,7 @@ export default {
         sort: 1,
       };
     },
+    // 监听添加班级对话框的关闭事件
     dialogClassClose() {
       this.classForm = {
         name: "",
@@ -568,6 +783,7 @@ export default {
         sort: 1,
       };
     },
+    // 监听编辑班级对话框的关闭事件
     editClassClose() {
       this.editClassForm = {
         name: "",
@@ -578,24 +794,15 @@ export default {
         sort: 1,
       };
     },
+    // 监听编辑学院年级系部层次对话框的关闭事件
     editCollegeClose() {
       this.editCollegeForm = {
         title: "",
-        type:"",
+        type: "",
         sort: 1,
       };
     },
-    // 添加编辑获取选择器值
-    handleChange() {
-      if (this.value.length > 0) {
-        this.form.pid = this.value[this.value.length - 1];
-        this.form.level = this.value.length + 1;
-      } else {
-        this.form.pid = 0;
-        this.form.level = 1;
-      }
-    },
-    //添加学院年级系部层次
+    //添加学院年级系部层次对话框
     add(type) {
       switch (
         type //想要判断的变量
@@ -619,11 +826,13 @@ export default {
       }
       this.dialogVisible = true;
     },
-    //添加班级
+    //添加班级对话框
     async addClass() {
+      console.log(this.list);
       this.dialogClassVisible = true;
       await this.getAttrList();
     },
+    //提交添加班级
     primaryClass() {
       this.$refs.ref.validate((valid) => {
         if (valid) {
@@ -637,7 +846,7 @@ export default {
         }
       });
     },
-    // 添加编辑按钮
+    // 提交添加学院年级系部层次编辑按钮
     primary(type) {
       this.form.type = type;
       this.$refs.ref.validate((valid) => {
@@ -653,7 +862,7 @@ export default {
         }
       });
     },
-    // 打开编辑按钮对话框
+    // 打开编辑（学院年级系部层次及班级）对话框
     async edit(type, id) {
       this.collegeData["type"] = type;
       this.collegeData["id"] = id;
@@ -694,42 +903,64 @@ export default {
         });
       }
     },
-    // 状态调整
-    setStatus(info) {
-      collegeStatus({ id: info.id, status: info.status }).then((response) => {
-        if (response.status === 20000) {
-          this.$base.message({ message: response.message });
-        } else {
-          info.status = info.status ? 0 : 1;
+    //提交学院年级系部层次编辑
+    updateCollege() {
+      this.$refs.ref.validate((valid) => {
+        if (valid) {
+          collegeUpdate(this.editCollegeForm).then((response) => {
+            console.log(response);
+            if (response.status === 20000) {
+              this.$base.message({ message: response.message });
+              this.getList();
+              this.editCollegeVisible = false;
+            }
+          });
         }
       });
     },
-    // 是否验证权限
-    setAuthOpen(info) {
-      collegeOpen({ id: info.id, auth_open: info.auth_open }).then(
+    //提交班级编辑
+    updateClass() {
+      console.log(this.editClassForm);
+      this.$refs.ref.validate((valid) => {
+        if (valid) {
+          classUpdate(this.editClassForm).then((response) => {
+            if (response.status === 20000) {
+              this.$base.message({ message: response.message });
+              this.getList();
+              this.editClassVisible = false;
+            }
+          });
+        }
+      });
+    },
+    // 状态调整
+    setStatus(info) {
+      collegeStatus({ id: info.class_id, status: info.status }).then(
         (response) => {
           if (response.status === 20000) {
             this.$base.message({ message: response.message });
           } else {
-            info.auth_open = info.auth_open ? 0 : 1;
+            info.status = info.status ? 0 : 1;
           }
         }
       );
     },
     // 是否固定面板
     setAffix(info) {
-      collegeAffix({ id: info.id, affix: info.affix }).then((response) => {
-        if (response.status === 20000) {
-          this.$base.message({ message: response.message });
-        } else {
-          info.affix = info.affix ? 0 : 1;
+      collegeAffix({ id: info.class_id, affix: info.affix }).then(
+        (response) => {
+          if (response.status === 20000) {
+            this.$base.message({ message: response.message });
+          } else {
+            info.affix = info.affix ? 0 : 1;
+          }
         }
-      });
+      );
     },
-    // 删除
+    //班级放入回收站
     collegeDestroy(id) {
       this.$base.confirm(
-        { content: "确定要删除该项菜单吗（会同时删除子菜单）！" },
+        { content: "确定要将该班级吗和属于这个班级的学生放入回收站？" },
         () => {
           collegeDestroy({ id: id }).then((response) => {
             if (response.status === 20000) {
@@ -740,25 +971,56 @@ export default {
         }
       );
     },
+    //回收班级
+    recycle(id) {
+      this.$base.confirm({ content: "确定恢复这个班级及班级学生吗？" }, () => {
+        collegeRecycle({ id: id }).then((response) => {
+          if (response.status === 20000) {
+            this.$base.message({ message: response.message });
+            this.delList();
+          }
+        });
+      });
+    },
+    //真删除班级
+    realDestroy(id) {
+      this.$base.confirm(
+        { content: "确定删除此班级及班级下的学生吗？" },
+        () => {
+          realDestroy({ id: id }).then((response) => {
+            if (response.status === 20000) {
+              this.$base.message({ message: response.message });
+              this.delList();
+            }
+          });
+        }
+      );
+    },
+    //设置排序
     setSorts(info) {
-      collegeSorts({ id: info.id, sort: info.sort }).then((response) => {
+      if (info.type == "class") {
+        this.sorts["id"] = info.class_id;
+        this.sorts["type"] = info.type;
+        this.sorts["sort"] = info.sort;
+      } else {
+        this.sorts["id"] = info.type_id;
+        this.sorts["type"] = info.type;
+        this.sorts["sort"] = info.sort;
+      }
+      collegeSorts({
+        id: this.sorts.id,
+        sort: this.sorts.sort,
+        type: this.sorts.type,
+      }).then((response) => {
         if (response.status === 20000) {
           this.$base.message({ message: response.message });
+          this.getList();
         } else {
           this.getList();
         }
       });
     },
-    collegePidArr(pid) {
-      collegePidArr({ pid: pid }).then((response) => {
-        if (response.status === 20000) {
-          this.value = response.data;
-          this.form.pid = pid;
-          this.dialogVisible = true;
-          this.title = "添加";
-        }
-      });
-    },
+    //获取学院年级系部层次信息列表
     async getAttrList() {
       getAttrList().then((response) => {
         if (response.status === 20000) {
@@ -766,6 +1028,15 @@ export default {
         }
       });
     },
+    studentsForm(id){
+      this.studentsFormVisible = true
+      this.classid = id
+    },
+    studentsFormClose(){
+      this.studentsFormVisible = false
+      this.classid= null
+      console.log(this.classid)
+    }
   },
 };
 </script>
