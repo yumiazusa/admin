@@ -1,3 +1,11 @@
+<!--
+ * @Author: yumiazusa yumiazusa@hotmail.com
+ * @Date: 2023-04-18 12:28:51
+ * @LastEditors: yumiazusa yumiazusa@hotmail.com
+ * @LastEditTime: 2023-10-21 10:29:48
+ * @FilePath: /datamaker/Users/ligen/Desktop/www/admin/src/views/admin/dashboard/index.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <template>
   <div>
       <panel-group :info="info" @handleSetLineChartData="handleSetLineChartData" />
@@ -12,6 +20,10 @@
           </el-table>
         </el-col>
       </el-row>
+      <div style=" margin-bottom: 30px;">
+                   <p>备案号：<a style="color:#666" target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">滇ICP备2021003909号-3;</a>
+                </p>
+                </div>
   </div>
 </template>
 
